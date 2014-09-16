@@ -6,7 +6,7 @@ deploy:
   provider: npm
   email: jeffrey.jagoda@gmail.com
   api_key:
-    secure: wIA4Wd1UcGL7juWp8SlGTe0tPKAMR1+xAf14mblGlqQXhBr/0H8Y1pOrE34UHoRKXtsDGV9Igq2BJPl/H2njBalaSZzeRiEZ37D0c1WjuRxFIfep+1WB7+bNGYsS9lou/eI2zp5+y52zfLPQXbDJfAFYvp45FnVDm0PF6UKAg6E=
+    secure: Td5ljwviTVwb/WoTb/QeiLkKWwyTxNrCdfUJEnogox7lu9kbDxT3AIB5VlYxxYffiwMfI00vwYQN5bahc4paXyPxSt8L3hyOtVZgLERgjlbiwc9iqOhtpbnsymW9RzcXcI8KUzjyz0CAKR9rJumgzqqxDO7fsMNY+mprNQR0ucg=
   on:
     tags: true
     repo: jagoda/outflux
