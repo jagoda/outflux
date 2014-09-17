@@ -4,7 +4,7 @@
     "test": "gulp"
   },
   "name": "outflux",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Hapi plugin for sending metrics to InfluxDB.",
   "author": "Jeff Jagoda <jeffrey.jagoda@gmail.com>",
   "license": "MIT",
