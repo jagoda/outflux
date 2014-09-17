@@ -8,6 +8,12 @@
   "description": "Hapi plugin for sending metrics to InfluxDB.",
   "author": "Jeff Jagoda <jeffrey.jagoda@gmail.com>",
   "license": "MIT",
+  "keywords": [
+    "hapi",
+    "influxdb",
+    "metrics",
+    "plugin"
+  ],
   "dependencies": {
     "joi": "^4.6.2",
     "lodash": "^2.4.1",
