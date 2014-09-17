@@ -7,6 +7,8 @@ var Outflux = require("../lib/outflux");
 var Path    = require("path");
 var Q       = require("q");
 var script  = exports.lab = Lab.script();
+var Sinon   = require("sinon");
+var Wreck   = require("wreck");
 
 var after    = script.after;
 var before   = script.before;
@@ -91,35 +93,99 @@ describe("The outflux plugin", function () {
 			Q.ninvoke(pack, "register", plugins).nodeify(done);
 		});
 
-		describe("creating a new point", function () {
+		describe("creating new points", function () {
+			var clock;
 			var request;
 
 			before(function (done) {
+				clock = Sinon.useFakeTimers();
+
 				request = new Nock("http://example.com")
 				.post(
 					"/db/test/series?u=foo&p=bar",
 					[
 						{
-							name    : "metric",
+							name    : "metric1",
 							columns : [ "a", "b" ],
 							points  : [
-								[ 1, 2 ]
+								[ 1, 2 ],
+								[ 3, null ]
+							]
+						},
+						{
+							name    : "metric2",
+							columns : [ "c", "d" ],
+							points  : [
+								[ 5, 6 ]
 							]
 						}
 					]
 				)
 				.reply(200);
 
-				pack.plugins.outflux.point("metric", { a : 1, b : 2 }).nodeify(done);
+				pack.plugins.outflux.point("metric1", { a : 1, b : 2 });
+				pack.plugins.outflux.point("metric1", { a : 3 });
+				pack.plugins.outflux.point("metric2", { c : 5, d : 6 });
+				done();
 			});
 
 			after(function (done) {
+				clock.restore();
 				Nock.cleanAll();
 				done();
 			});
 
-			it("sends the point to the specified URL", function (done) {
-				expect(request.isDone(), "request").to.be.true;
+			it("does not send the metrics immediately", function (done) {
+				expect(request.isDone(), "request").to.be.false;
+				done();
+			});
+
+			describe("after 1 second", function () {
+				before(function (done) {
+					clock.tick(1000);
+					done();
+				});
+
+				after(function (done) {
+					// Need to run the clock to allow the response to process.
+					clock.tick(1000);
+					done();
+				});
+
+				it("sends a batch of all queued metrics", function (done) {
+					expect(request.isDone(), "request").to.be.true;
+					done();
+				});
+			});
+		});
+
+		describe("handling request errors", function () {
+			var clock;
+			var log;
+			var post;
+
+			before(function (done) {
+				clock = Sinon.useFakeTimers();
+				log   = Sinon.stub(pack, "log");
+				post  = Sinon.stub(Wreck, "post");
+				post.callsArgWith(2, null, { statusCode : 400 }, "body");
+
+				pack.plugins.outflux.point("test", {});
+				clock.tick(1000);
+				done();
+			});
+
+			after(function (done) {
+				clock.restore();
+				log.restore();
+				post.restore();
+				done();
+			});
+
+			it("logs a warning message", function (done) {
+				expect(log.callCount, "called").to.equal(1);
+				expect(log.firstCall.args[0], "tags").to.have.members([ "warning", "outflux" ]);
+				expect(log.firstCall.args[1], "message").to.match(/failed to post/i);
 				done();
 			});
 		});

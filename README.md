@@ -40,9 +40,8 @@ example `http://example.com/db/somedb/series?u=username&p=password`.
 | data      | The data point.              |
 
 Creates a new data point. The `data` object is a standard JavaScript object.
-The key names are used as the column names for the point. Returns a promise that
-is resolved if the point is successfully processed by Influx and rejected
-otherwise.
+The key names are used as the column names for the point. Points are batched on
+one second intervals to improve performance.
 
 [hapi]: http://hapijs.com/ "Hapi"
 [influxdb]: http://influxdb.com/ "InfluxDB"
