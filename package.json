@@ -9,15 +9,19 @@
   "author": "Jeff Jagoda <jeffrey.jagoda@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "joi": "^4.6.2",
     "lodash": "^2.4.1",
-    "q": "^1.0.1"
+    "q": "^1.0.1",
+    "wreck": "^5.0.1"
   },
   "devDependencies": {
     "gulp": "^3.8.8",
     "gulp-jscs": "^1.1.2",
     "gulp-jshint": "^1.8.4",
     "gulp-lab": "^1.0.0",
+    "hapi": "^6.8.1",
     "jshint-stylish": "^0.4.0",
-    "lab": "^4.4.4"
+    "lab": "^4.4.4",
+    "nock": "^0.47.0"
   }
 }
