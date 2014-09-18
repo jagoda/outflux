@@ -41,7 +41,9 @@ example `http://example.com/db/somedb/series?u=username&p=password`.
 
 Creates a new data point. The `data` object is a standard JavaScript object.
 The key names are used as the column names for the point. Points are batched on
-one second intervals to improve performance.
+one second intervals to improve performance. Returns a promise that is resolved
+or rejected when the point is actually sent to the server depending on whether
+or not the request was successful.
 
 [hapi]: http://hapijs.com/ "Hapi"
 [influxdb]: http://influxdb.com/ "InfluxDB"
