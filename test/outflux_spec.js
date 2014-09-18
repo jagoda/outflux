@@ -171,6 +171,7 @@ describe("The outflux plugin", function () {
 
 		describe("handling request errors", function () {
 			var clock;
+			var error;
 			var promise;
 			var request;
 
@@ -192,10 +193,15 @@ describe("The outflux plugin", function () {
 
 				promise = pack.plugins.outflux.point("test", {});
 				clock.restore();
+
 				promise = promise.timeout(INTERVAL * 2);
+				promise.fail(function (failure) {
+					error = failure;
+				});
 				promise.fin(function () {
 					done();
 				});
+
 				clock.tick(INTERVAL);
 			});
 
@@ -206,6 +212,8 @@ describe("The outflux plugin", function () {
 
 			it("notifies the caller that the metrics were not sent", function (done) {
 				expect(promise.isRejected(), "rejected").to.be.true;
+				expect(error, "type").to.be.an.instanceOf(Error);
+				expect(error.message, "message").to.match(/failed to post/i);
 				done();
 			});
 		});
