@@ -16,6 +16,8 @@ var expect   = Lab.expect;
 var it       = script.it;
 
 describe("The outflux plugin", function () {
+	var INTERVAL = 5000;
+
 	var manifest;
 
 	before(function (done) {
@@ -133,7 +135,7 @@ describe("The outflux plugin", function () {
 				// since tests run in parallel.
 				clock.restore();
 				// Cause the promise to time out if not fulfilled or rejected.
-				promise = promise.timeout(2000);
+				promise = promise.timeout(INTERVAL * 2);
 				done();
 			});
 
@@ -152,7 +154,7 @@ describe("The outflux plugin", function () {
 				before(function (done) {
 					// Wait for the promise to be fulfilled or rejected.
 					promise.nodeify(done);
-					clock.tick(1000);
+					clock.tick(INTERVAL);
 				});
 
 				it("notifies the caller that the metrics were sent", function (done) {
@@ -169,13 +171,11 @@ describe("The outflux plugin", function () {
 
 		describe("handling request errors", function () {
 			var clock;
-			var log;
 			var promise;
 			var request;
 
 			before(function (done) {
 				clock = Sinon.useFakeTimers();
-				log   = Sinon.stub(pack, "log");
 
 				request = new Nock("http://example.com")
 				.post(
@@ -192,28 +192,20 @@ describe("The outflux plugin", function () {
 
 				promise = pack.plugins.outflux.point("test", {});
 				clock.restore();
-				promise = promise.timeout(2000);
+				promise = promise.timeout(INTERVAL * 2);
 				promise.fin(function () {
 					done();
 				});
-				clock.tick(1000);
+				clock.tick(INTERVAL);
 			});
 
 			after(function (done) {
-				log.restore();
 				Nock.cleanAll();
 				done();
 			});
 
 			it("notifies the caller that the metrics were not sent", function (done) {
 				expect(promise.isRejected(), "rejected").to.be.true;
-				done();
-			});
-
-			it("logs a warning message", function (done) {
-				expect(log.callCount, "called").to.equal(1);
-				expect(log.firstCall.args[0], "tags").to.have.members([ "warning", "outflux" ]);
-				expect(log.firstCall.args[1], "message").to.match(/failed to post/i);
 				done();
 			});
 		});
