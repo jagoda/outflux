@@ -52,6 +52,11 @@ describe("The outflux plugin", function () {
 		done();
 	});
 
+	it("is the package entry point", function (done) {
+		expect(require(".."), "entry point").to.equal(Outflux);
+		done();
+	});
+
 	describe("when configured without a database URL", function () {
 		var error;
 		var pack;
